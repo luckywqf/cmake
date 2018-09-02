@@ -1859,6 +1859,31 @@ void cmLocalUnixMakefileGenerator3::WriteDependLanguageInfo(
                       << "\"\n";
     }
     cmakefileStream << "  )\n";
+
+    // Target-specific force include files:
+    cmakefileStream << "\n"
+                    << "# The force include files:\n";
+    cmakefileStream << "set(CMAKE_" << implicitLang.first
+                    << "_TARGET_INCLUDE_FILE\n";
+
+    std::string compile_flags;
+    this->GetTargetCompileFlags(target, config, implicitLang.first, compile_flags);
+
+    std::vector<std::string> flags;
+    std::vector<std::string> include_files;
+    cmsys::SystemTools::Split(compile_flags, flags, ' ');
+    for (int i = 0; i < flags.size(); i++) {
+      if (flags[i] == "-include") {
+        if (i + 1 < flags.size())
+          include_files.push_back(flags[i + 1]);
+      }
+    }
+    for (std::string const& include : include_files) {
+      cmakefileStream << "  \""
+                      << include
+                      << "\"\n";
+    }
+    cmakefileStream << "  )\n";
   }
 
   // Store include transform rule properties.  Write the directory

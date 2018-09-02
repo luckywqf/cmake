@@ -112,6 +112,10 @@ protected:
   std::vector<std::string> IncludePath;
 
   void SetIncludePathFromLanguage(const std::string& lang);
+
+    // The force include file.
+  std::vector<std::string> ForceInclude;
+  void SetForceIncludeFileFromLanguage(const std::string& lang);
 };
 
 #endif

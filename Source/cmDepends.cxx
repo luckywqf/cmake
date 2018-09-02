@@ -258,3 +258,26 @@ void cmDepends::SetIncludePathFromLanguage(const std::string& lang)
     }
   }
 }
+
+void cmDepends::SetForceIncludeFileFromLanguage(const std::string& lang)
+{
+  // Look for the new per "TARGET_" variant first:
+  const char* includeFile = nullptr;
+  std::string forceIncludeVar = "CMAKE_";
+  forceIncludeVar += lang;
+  forceIncludeVar += "_TARGET_INCLUDE_FILE";
+  cmMakefile* mf = this->LocalGenerator->GetMakefile();
+  includeFile = mf->GetDefinition(forceIncludeVar);
+  if (includeFile) {
+    cmSystemTools::ExpandListArgument(includeFile, this->ForceInclude);
+  } else {
+    // Fallback to the old directory level variable if no per-target var:
+    forceIncludeVar = "CMAKE_";
+    forceIncludeVar += lang;
+    forceIncludeVar += "_INCLUDE_FILE";
+    includeFile = mf->GetDefinition(forceIncludeVar);
+    if (includeFile) {
+      cmSystemTools::ExpandListArgument(includeFile, this->ForceInclude);
+    }
+  }
+}

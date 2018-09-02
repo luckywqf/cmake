@@ -34,7 +34,8 @@ cmDependsC::cmDependsC(
 
   // Configure the include file search path.
   this->SetIncludePathFromLanguage(lang);
-
+  this->SetForceIncludeFileFromLanguage(lang);
+   
   // Configure regular expressions.
   std::string scanRegex = "^.*$";
   std::string complainRegex = "^$";
@@ -122,6 +123,13 @@ bool cmDependsC::WriteDependencies(const std::set<std::string>& sources,
       root.FileName = src;
       this->Unscanned.push(root);
       this->Encountered.insert(src);
+    }
+
+    for (std::string const& include : this->ForceInclude) {
+      UnscannedEntry root;
+      root.FileName = include;
+      this->Unscanned.push(root);
+      this->Encountered.insert(include);
     }
 
     std::set<std::string> scanned;
